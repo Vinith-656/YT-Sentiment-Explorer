@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Comment Analyzer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            /* background-color: #111; */
+            padding: 20px;
+            position: relative;
+        }
+        .logo {
+            position: absolute;
+            top: 20px; /* Adjust as needed */
+            left: 20px; /* Adjust as needed */
+            width: 10vw; /* Adjust size as needed */
+            height: 10vw; /* Set height equal to width for a perfect circle */
+            max-width: 100px;
+            max-height: 100px;
+            border: 2px solid white; /* Border color and thickness */
+            border-radius: 50%; /* Make the logo circular */
+            object-fit: cover; /* Ensure the image covers the area without distortion */
+}
+        h1 {
+            color: #fff;
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        p{
+            text-align: center;
+            font-size:26px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        div{
+            font-size: 20px;
+        }
+
+        ul{
+            align-items: center;
+            display: inline-block;
+            text-align: left;
+            font-size: 25px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid white;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        label {
+            display: block;
+            margin: 15px 0 5px;
+        }
+        input[type="text"], input[type="number"], input[type="url"] {
+            width: 96%;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #333;
+            color: #fff;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: #fff;
+            outline: none;
+        }
+        button {
+            background-color: #444;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            align-self: center center;
+            font-size: 18px;
+            align-items: center;
+        }
+        input{
+            font-size: 20px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+        .extra-large {
+            font-size: 100px;
+            font-weight: bold;
+            background: white; /* Gradient background */
+            background-clip: text;
+            -webkit-background-clip: text; /* Clip background to text */
+            -webkit-text-fill-color: transparent; /* Make text color transparent */
+            text-align: center;
+            margin: 20px;
+            text-transform: uppercase;
+            font-style:italic;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 23px;
+            color:gainsboro;
+        }
+        @media (max-width: 600px) {
+            .extra-large {
+                font-size: 8vw; 
+            }
+        }
+    </style>
+
+    <script>
+        function fetchTotalComments() {
+            var videoUrl = document.getElementById("video_url").value;
+            if (!videoUrl) {
+                alert("Please enter a valid YouTube URL.");
+                return;
+            }
+
+            fetch('/get_total_comments', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ video_url: videoUrl })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById("total_comments_display").innerText = "Total Comments: " + data.total_comments;
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</head>
+<body>
+
+    <header>
+        <img src="/logo.jpg" alt="Logo" class="logo">
+        <h1 style="font-size:90px;">YT Sentiment Explorer</h1>
+        <p><i>Analyze YouTube comments to understand audience sentiment in real time.!</i></p>
+    </header>
+
+    <div class="container" style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+        <form method="POST">
+            <label for="video_url" >Enter a YouTube video URL and discover what people are saying!</label>
+            <input type="url" id="video_url" name="video_url" pattern="^(https?\:\/\/)?(www\.youtube\.com|youtu\.be)\/(watch\?v=[\w-]+|[\w-]+)" required placeholder="https://www.youtube.com/watch?v=................."><br><br>
+            
+            <button type="button" onclick="fetchTotalComments()" style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Get Total Comments</button>
+            <p id="total_comments_display"></p>
+
+            <label for="max_results"> Give the No. of Comments to Fetch:</label>
+            <input type="number" id="max_results" name="max_results" placeholder="please give the count within the total comments count"><br><br>
+            
+            <label for="csv_filename">CSV File Name:</label>
+            <input type="text" id="csv_filename" name="csv_filename" required placeholder="E.g., sample.csv"><br><br>
+            
+            <input type="submit" value="Lets Analyze.!" style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;" >
+        </form>
+    </div>
+    
+    <div style="text-align: center;">
+      <p>Why to use this model..?</p>
+       <ul style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+        
+        <li>Fetches & analyzes YouTube comments</li>
+        <li> Categorizes comments as Positive, Neutral, or Negative</li>
+        <li>Generates CSV reports & visual charts</li>
+        <li>Helps creators understand viewer feedback</li>
+
+       </ul> 
+
+    </div>
+
+    <div class="footer" style="text-align: center;">
+        Developed by <b>SMPV</b> developers | smpv.developers04@gmal.com
+    </div>
+</body>
+</html>

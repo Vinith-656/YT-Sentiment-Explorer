@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Sentiment Explorer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    margin: 0;
+    padding: 20px;
+}
+
+/* header {
+    background-color: #000000;
+    padding: 10px;
+    text-align: left;
+} */
+
+.logo {
+            position: absolute;
+            top: 20px; /* Adjust as needed */
+            left: 20px; /* Adjust as needed */
+            width: 10vw; /* Adjust size as needed */
+            height: 10vw; /* Set height equal to width for a perfect circle */
+            max-width: 100px;
+            max-height: 100px;
+            border: 2px solid white; /* Border color and thickness */
+            border-radius: 50%; /* Make the logo circular */
+            object-fit: cover; /* Ensure the image covers the area without distortion */
+}
+
+h1 {
+
+    font-size: 53px;
+    text-align: center;
+}
+
+.result-container, .chart-container, .download-container {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    background-color: #1e1e1e;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 25px;
+}
+
+h2 {
+    margin-top: 0;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 45px;
+}
+
+a {
+    color: #00bcd4;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.download-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #00bcd4;
+    color: #ffffff;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.download-button:hover {
+    background-color: #0097a1;
+}
+
+
+.chart-container {
+    display:block; 
+    justify-content: center;
+}
+
+canvas {
+    /* width:  25% !important; 
+    height: auto !important;  */
+    display: block;
+    margin: 0 auto;
+}
+
+/* Holographic motion effect for the pie chart */
+.holographic {
+    filter: brightness(1.2) contrast(1.2);
+    animation: holographic-animation 1.5s infinite alternate;
+}
+.footer {
+    margin-top: 30px;
+    font-size: 23px;
+    color:gainsboro;
+}
+
+@keyframes holographic-animation {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+    </style>
+</head>
+<body>
+    <header>
+        <img src="/logo.jpg" alt="Logo" class="logo">
+        <h1>YT Sentiment Explorer</h1>
+    </header>
+    <main>
+        <section class="result-container">
+            <h2><u>Analysis Results </u></h2>
+            <p style="font-size: large;">Here's the analysis result of the give URL..</p>
+            <p><strong>Video URL:</strong> <a href="{{video_url}}" id="video-url">{{video_url}}</a></p>
+            <p><strong>Total Comments Fetched:</strong> <span id="total-comments"></span>{{ total_comments }}</p>
+            <p><strong>Sentiment Analysis Accuracy:</strong> <span id="accuracy"></span>{{ accuracy }}%</p>
+            <p><strong>Positive Comments:</strong> <span id="positive-comments"></span>{{ results['Positive'] | length }}</p>
+            <p><strong>Neutral Comments:</strong> <span id="neutral-comments"></span>{{ results['Neutral'] | length }}</p>
+            <p><strong>Negative Comments:</strong> <span id="negative-comments"></span>{{ results['Negative'] | length }}</p>
+        </section>
+        <section class="chart-container" style="text-align: center;">
+            <h2 style="text-align: center;">Sentiment Distribution using a Pie Chart</h2>
+            <img src="/sentiment_distribution.jpg" alt="Sentiment Distribution Pie Chart"> 
+            <!-- <canvas id="sentimentChart" class="holographic"></canvas> -->
+        </section>
+        <section class="download-container">
+            <a href="{{ url_for('download_file', filename=request.form['csv_filename']) }}" download class="download-button">Download Comments as CSV</a>
+            <br><br><a href="/">Analyze Another Video</a>
+        </section>
+        <div class="footer" style="text-align: center;">
+            Developed by <b>SMPV</b> developers | smpv.developers04@gmal.com
+        </div>
+    </main>
+    <script>
+        // // Sample data for demonstration
+        // const videoUrl = "{{ video_url }}";
+        // const totalComments = {{ total_comments }};
+        // const accuracy = "{{ accuracy }}%";
+        // const positiveComments = 60;
+        // const neutralComments = 25;
+        // const negativeComments = 15;
+
+        // Populate the results
+        document.getElementById('video-url').innerText = videoUrl;
+        document.getElementById('video-url').href = videoUrl;
+        document.getElementById('total-comments').innerText = totalComments;
+        document.getElementById('accuracy').innerText = accuracy;
+        document.getElementById('positive-comments').innerText = positiveComments;
+        document.getElementById('neutral-comments').innerText = neutralComments;
+        document.getElementById('negative-comments').innerText = negativeComments;
+
+        // Create pie chart
+        window.onload = function() {
+    const ctx = document.getElementById('sentimentChart').getContext('2d');
+    const sentimentChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Positive', 'Neutral', 'Negative'],
+            datasets: [{
+                data: [positiveComments, neutralComments, negativeComments],
+                backgroundColor: ['#4CAF50', '#FFC107', '#F44336'],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Sentiment Distribution' }
+            }
+        }
+    });
+};
+
+    </script>
+</body>
+</html>
